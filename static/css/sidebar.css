@@ -1,0 +1,12 @@
+.navbar {
+    border-bottom:1px solid #e8e8e8 ;
+}
+.logout>a {
+    text-decoration: none;
+    color: grey;
+}
+.sidebar {
+    width: 15%;
+    height: 750px;
+
+}

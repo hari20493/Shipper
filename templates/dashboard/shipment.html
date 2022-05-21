@@ -1,0 +1,163 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'assets/css/dashboard.css' %}">
+{% endblock styles %}
+{% block content %}
+    <div class="container-fluid page-body-wrapper">
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h3 class="page-title"> Shipment </h3>
+                </div>
+                <div class="row">
+                    <!-- Modal -->
+                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Shipment Details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="justify-content-center loader">
+                                        <div class="spinner-border text-success" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <div class="content">
+                                        <div class="row card">
+                                            <div class="card-body d-flex">
+                                                <div class="col-md-5">Shipment ID:</div>
+                                                <div class="col-md-5" id="shipment_id"></div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row m-2">
+                                            <div class="col-md-4 m-2">Weight:</div>
+                                            <div class="col-md-4 m-2" id="weight"></div>
+                                            <div class="col-md-4 m-2">Company:</div>
+                                            <div class="col-md-4 m-2" id="company_name"></div>
+                                        </div>
+                                        {% if request.user.is_superuser %}
+                                            <div class="row m-2">
+                                                <div class="col-md-3 m-2">
+                                                    <div class="badge pending badge-info"
+                                                         style="color: white;cursor: pointer"
+                                                         onclick="changeStatus('pending')">
+                                                        Pending
+                                                        <div class="spinner-border spinner-pending"
+                                                             style="width: 10px; height: 10px;display: none"
+                                                             role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 m-2">
+                                                    <div class="badge sending badge-info"
+                                                         style="color: white;cursor: pointer"
+                                                         onclick="changeStatus('sending')">Sending
+                                                        <div class="spinner-border spinner-sending"
+                                                             style="width: 10px; height: 10px;display: none"
+                                                             role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 m-2">
+                                                    <div class="badge received badge-info"
+                                                         style="color: white;cursor: pointer"
+                                                         onclick="changeStatus('received')">Received
+                                                        <div class="spinner-border spinner-received"
+                                                             style="width: 10px; height: 10px;display: none"
+                                                             role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="row m-2">
+                                                <div class="col-md-12 m-2">
+                                                    <div class=""
+                                                         style="color: white;"
+
+                                                    >
+                                                        Last Updated On: <span id="updated"></span>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 m-2">
+                                                    <div class="badge pending badge-success text-uppercase"
+                                                         style="color: white;"
+                                                         id="status"
+                                                    >
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Shipment Code</th>
+                                            <th>Weight</th>
+                                            <th>Customer Name</th>
+                                            <th>Details</th>
+                                            <th>Track</th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for shipment in shipments %}
+                                            <tr>
+                                                <td>{{ shipment.shipping_code }}</td>
+                                                <td>{{ shipment.weight }}</td>
+                                                <td>{{ shipment.customer.name }}</td>
+                                                <td>
+                                                    <button data-bs-toggle="modal"
+                                                            data-bs-target="#staticBackdrop"
+                                                            style="text-decoration: none;color: white;background: transparent;border: none"
+                                                            class="details_btn" data-shipment-id="{{ shipment.id }}">
+                                                        <i
+                                                                class="mdi mdi-eye"></i></button>
+                                                </td>
+                                                <td>
+                                                    <a
+                                                        href="{% url 'track-shipment' shipment.shipping_code %}"><i class="mdi mdi-truck-check"></i></a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'assets/js/shipment.js' %}">
+
+    </script>
+{% endblock scripts %}

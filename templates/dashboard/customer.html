@@ -1,0 +1,42 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container-fluid page-body-wrapper">
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h3 class="page-title"> Customers </h3>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Customer Name</th>
+                                            <th>Username</th>
+                                            <th>email</th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for customer in customers %}
+                                            <tr>
+                                                <td>{{ customer.name }}</td>
+                                                <td>{{ customer.admin_user.username }}</td>
+                                                <td>{{ customer.admin_user.email }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

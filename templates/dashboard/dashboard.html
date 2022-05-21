@@ -1,0 +1,321 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container-fluid page-body-wrapper">
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="row">
+                    {% if request.user.is_superuser %}
+                        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-9">
+                                            <div class="d-flex align-items-center align-self-start">
+                                                <h3 class="mb-0">{{ customers_count }}</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="icon icon-box-success">
+                                                <span class="mdi mdi-truck-check icon-item"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6 class="text-muted font-weight-normal">Total Customers</h6>
+                                </div>
+
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            <h3 class="mb-0">{{ shipments_count }}</h3>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="icon icon-box-success">
+                                            <span class="mdi mdi-truck-delivery icon-item"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="text-muted font-weight-normal">Total Shipments</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            <h3 class="mb-0" id="delivered">{{ received_shipments_count }}</h3>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="icon icon-box-success ">
+                                            <span class="mdi mdi-truck-fast icon-item"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="text-muted font-weight-normal">Received</h6>
+                            </div>
+                        </div>
+                    </div>
+                    {% if not request.user.is_superuser %}
+                        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-9">
+                                            <div class="d-flex align-items-center align-self-start">
+                                                <h3 class="mb-0" id="delivered">{{ sent_shipments_count }}</h3>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="icon icon-box-info">
+                                                <span class="mdi mdi-truck-fast icon-item"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6 class="text-muted font-weight-normal">Sending</h6>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            <h3 class="mb-0" id="pending-shipment">{{ pending_shipments_count }}</h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="icon icon-box-danger">
+                                            <span class="mdi mdi-timeline-alert icon-item"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="text-muted font-weight-normal">Pending</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 grid-margin stretch-card">
+                        {% include 'dashboard/partials/transaction_history.html' %}
+                    </div>
+                    <div class="col-md-8 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Order Status</h4>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th> Code</th>
+                                            <th> Weight</th>
+                                            <th> Date</th>
+                                            <th>Status</th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for shipment in shipments %}
+                                            <tr>
+                                                <td>{{ shipment.shipping_code }}</td>
+                                                <td>{{ shipment.weight }}</td>
+                                                <td>{{ shipment.created_date }}</td>
+                                                <td>
+                                                    {% if shipment.shipment_current_status == 'pending' %}
+                                                        <span class="badge badge-danger">Pending</span>
+                                                    {% elif shipment.shipment_current_status == 'received' %}
+                                                        <span class="badge badge-success">Received</span>
+                                                    {% elif shipment.shipment_current_status == 'sending' %}
+                                                        <span class="badge badge-warning">Sending</span>
+                                                    {% else %}
+                                                        <span class="badge badge-danger">{{ shipment.shipment_current_status }}</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if not request.user.is_superuser %}
+                    <div class="row">
+                        <div class="col-md-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Order Report</h4>
+                                    <canvas id="barChart" style="height:230px"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+        <!-- main-panel ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+{% endblock content %}
+{% block scripts %}
+    <script src="{% static 'assets/js/dashboard.js' %}"></script>
+    <script>
+        if ($("#transaction-history").length) {
+            var areaData = {
+                labels: ["Pending", "Completed"],
+                datasets: [{
+                    data: [{{ pending_shipments_count }}, {{ received_shipments_count }}],
+                    backgroundColor: [
+                        "#00d25b", "#ffab00"
+                    ]
+                }
+                ]
+            };
+            var areaOptions = {
+                responsive: true,
+                maintainAspectRatio: true,
+                segmentShowStroke: false,
+                cutoutPercentage: 70,
+                elements: {
+                    arc: {
+                        borderWidth: 0
+                    }
+                },
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    enabled: true
+                }
+            }
+            var transactionhistoryChartPlugins = {
+                beforeDraw: function (chart) {
+                    var width = chart.chart.width,
+                        height = chart.chart.height,
+                        ctx = chart.chart.ctx;
+
+                    ctx.restore();
+                    var fontSize = 1;
+                    ctx.font = fontSize + "rem sans-serif";
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = "middle";
+                    ctx.fillStyle = "#ffffff";
+                    var text = "{{ shipments_count }}",
+                        textX = Math.round((width - ctx.measureText(text).width) / 2),
+                        textY = height / 2.4;
+
+                    ctx.fillText(text, textX, textY);
+
+                    ctx.restore();
+                    var fontSize = 0.75;
+                    ctx.font = fontSize + "rem sans-serif";
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = "middle";
+                    ctx.fillStyle = "#6c7293";
+
+                    var texts = "Total",
+                        textsX = Math.round((width - ctx.measureText(text).width) / 1.93),
+                        textsY = height / 1.7;
+
+                    ctx.fillText(texts, textsX, textsY);
+                    ctx.save();
+                }
+            }
+            var transactionhistoryChartCanvas = $("#transaction-history").get(0).getContext("2d");
+            var transactionhistoryChart = new Chart(transactionhistoryChartCanvas, {
+                type: 'doughnut',
+                data: areaData,
+                options: areaOptions,
+                plugins: transactionhistoryChartPlugins
+            });
+        }
+        {% if not request.user.is_superuser %}
+            $(function () {
+                /* ChartJS
+                 * -------
+                 * Data and config for chartjs
+                 */
+                'use strict';
+                console.log("{ delivered_orders_date|urlize}}")
+                var data = {
+                    labels: {{ delivered_orders_dates|safe }},
+                    datasets: [{
+                        label: 'Delivered Orders',
+                        data: {{ delivered_orders_count }},
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1,
+                        fill: false
+                    }]
+                };
+                var options = {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            },
+                            gridLines: {
+                                color: "rgba(204, 204, 204,0.1)"
+                            }
+                        }],
+                        xAxes: [{
+                            gridLines: {
+                                color: "rgba(204, 204, 204,0.1)"
+                            }
+                        }]
+                    },
+                    legend: {
+                        display: true
+                    },
+                    elements: {
+                        point: {
+                            radius: 0
+                        }
+                    }
+                };
+
+                // Get context with jQuery - using jQuery's .get() method.
+                if ($("#barChart").length) {
+                    var barChartCanvas = $("#barChart").get(0).getContext("2d");
+                    // This will get the first returned node in the jQuery collection.
+                    var barChart = new Chart(barChartCanvas, {
+                        type: 'bar',
+                        data: data,
+                        options: options
+                    });
+                }
+            });
+        {% endif %}
+    </script>
+{% endblock scripts %}

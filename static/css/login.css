@@ -1,0 +1,21 @@
+* {
+    font-family: 'Poppins', sans-serif;
+}
+.main {
+    background: whitesmoke;
+    position: absolute;
+
+}
+.login-container {
+    background: #0c5460;
+    margin: 2em auto;
+    padding-bottom: 2em;
+}
+
+.form {
+    margin-top: 30px;
+}
+
+.form>input {
+    margin-top: 30px;
+}
